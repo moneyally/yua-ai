@@ -1,0 +1,27 @@
+name: YUA Signal Batch
+
+on:
+  schedule:
+    - cron: "0 18 * * *"   # KST 새벽 3시
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run signal batch
+        run: npm run batch:signals
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
