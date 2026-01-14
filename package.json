@@ -1,0 +1,11 @@
+{
+  "name": "yua-signal-batch",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "batch:signals": "node src/batch/run-signal-generators.js"
+  },
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
+}
