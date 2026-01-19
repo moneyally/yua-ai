@@ -1,31 +1,22 @@
-// 📂 src/ai/phase9/normalize/raw-to-normalized.ts
+// 📂 src/ai/phase9/normalize/raw-to-normalized.js
 // 🔥 PHASE 9 — RAW → NORMALIZED (SSOT)
 // - deterministic
 // - idempotent
 // - NO decision / NO learning
 
-import type { Client } from "pg";
-
-export type NormalizedIntent =
-  | "question"
-  | "design"
-  | "decision"
-  | "continuation"
-  | "shift"
-  | "error";
-
-export async function normalizeRawEvent(
-  client: Client,
-  raw: {
-    event_id: string;
-    workspace_id: string;
-    thread_id: number | null;
-    actor: string;
-    event_kind: string;
-    phase: string;
-    payload: any;
-  }
-): Promise<void> {
+/**
+ * @param {import("pg").Client} client
+ * @param {{
+ *   event_id: string,
+ *   workspace_id: string,
+ *   thread_id: number | null,
+ *   actor: string,
+ *   event_kind: string,
+ *   phase: string,
+ *   payload: any
+ * }} raw
+ */
+export async function normalizeRawEvent(client, raw) {
   const payload = raw.payload ?? {};
 
   const hasText =
@@ -41,9 +32,9 @@ export async function normalizeRawEvent(
 
   const isMultimodal = hasText && hasImage;
 
-  let intent: NormalizedIntent = "question";
+  let intent = "question";
 
-  // 🔒 SSOT: intent inference (shallow, rule-only)
+  // 🔒 SSOT: rule-only intent inference
   if (raw.event_kind === "decision") intent = "decision";
   else if (raw.phase === "execution") intent = "continuation";
   else if (raw.event_kind === "error") intent = "error";
@@ -71,14 +62,13 @@ export async function normalizeRawEvent(
       raw.workspace_id,
       raw.thread_id,
       intent,
-      null, // turn_intent은 이후 단계에서만
+      null, // turn_intent: Phase 10+
       hasText,
       hasImage,
       isMultimodal,
-      typeof raw.payload?.confidence === "number"
-        ? raw.payload.confidence
+      typeof payload?.confidence === "number"
+        ? payload.confidence
         : null,
     ]
   );
 }
-
