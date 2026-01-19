@@ -21,7 +21,15 @@ jobs:
       - name: Install deps
         run: npm install
 
+      # 1️⃣ Phase 9 — RAW → NORMALIZE → SIGNAL
       - name: Run signal batch
         run: npm run batch:signals
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 2️⃣ 🔥 Phase 9-4 — EVENT / MEMORY EMBEDDING
+      - name: Run embedding batch
+        run: npm run batch:embeddings
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
