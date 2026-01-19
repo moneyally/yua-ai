@@ -96,7 +96,7 @@ async function main() {
 
     if (documentRows.length > 0) {
       console.log(
-        \`[BATCH] Generating \${documentRows.length} document embeddings\`
+        `[BATCH] Generating ${documentRows.length} document embeddings`
       );
       await generateDocumentEmbeddings(client, documentRows);
     } else {
