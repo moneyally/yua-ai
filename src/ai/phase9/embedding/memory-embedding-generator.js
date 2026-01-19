@@ -45,26 +45,28 @@ export async function generateMemoryEmbeddings(client, rows) {
       input: inputText,
     });
 
-    const vector = embeddingResult.data[0].embedding;
+const vector = embeddingResult.data[0].embedding;
+const vectorLiteral = `[${vector.join(",")}]`;
 
-    await client.query(
-      `
-      INSERT INTO phase9_memory_embeddings (
-        memory_record_id,
-        embedding,
-        namespace,
-        model
-      )
-      VALUES ($1,$2,$3,$4)
-      ON CONFLICT DO NOTHING
-      `,
-      [
-        row.id,
-        vector,
-        namespace,
-        "text-embedding-3-large",
-      ]
-    );
+await client.query(
+  `
+  INSERT INTO phase9_memory_embeddings (
+    memory_record_id,
+    embedding,
+    namespace,
+    model
+  )
+  VALUES ($1, $2::vector, $3, $4)
+  ON CONFLICT DO NOTHING
+  `,
+  [
+    row.id,
+    vectorLiteral,
+    namespace,
+    "text-embedding-3-large",
+  ]
+);
+
   }
 }
 
