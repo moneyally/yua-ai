@@ -2,8 +2,8 @@
 // 🔥 PHASE 9 BATCH — NORMALIZE + SIGNAL (SSOT FINAL)
 
 import pg from "pg";
-import { normalizeRawEvent } from "../ai/phase9/normalize/raw-to-normalized.js";
-import { generateSignals } from "../ai/phase9/signal/signal-generator.js";
+import { normalizeRawEvent } from "../../ai/phase9/normalize/raw-to-normalized.js";
+import { generateSignals } from "../../ai/phase9/signal/signal-generator.js";
 
 const { Client } = pg;
 
