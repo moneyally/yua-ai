@@ -1,29 +1,23 @@
-// 📂 src/ai/phase9/signal/signal-generator.ts
+// 📂 src/ai/phase9/signal/signal-generator.js
 // 🔥 PHASE 9 — SIGNAL GENERATOR (SSOT)
 // - rule-based only
 // - deterministic
+// - idempotent
 // - batch-safe
 
-import type { Client } from "pg";
-
-type NormalizedRow = {
-  id: number;
-  intent: string;
-  has_text: boolean;
-  has_image: boolean;
-  is_multimodal: boolean;
-  confidence: number | null;
-};
-
-export async function generateSignals(
-  client: Client,
-  normalized: NormalizedRow
-): Promise<void> {
-  const signals: {
-    key: string;
-    value: number;
-    weight: number;
-  }[] = [];
+/**
+ * @param {import("pg").Client} client
+ * @param {{
+ *   id: number,
+ *   intent: string,
+ *   has_text: boolean,
+ *   has_image: boolean,
+ *   is_multimodal: boolean,
+ *   confidence: number | null
+ * }} normalized
+ */
+export async function generateSignals(client, normalized) {
+  const signals = [];
 
   // 🔒 RULE 1: multimodal boost
   if (normalized.is_multimodal) {
@@ -80,4 +74,3 @@ export async function generateSignals(
     );
   }
 }
-
