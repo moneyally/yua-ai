@@ -3,6 +3,7 @@
 import pg from "pg";
 import { generateEventEmbeddings } from "../ai/phase9/embedding/event-embedding-generator.js";
 import { generateMemoryEmbeddings } from "../ai/phase9/embedding/memory-embedding-generator.js";
+import { generateDocumentEmbeddings } from "../ai/phase9/embedding/document-embedding-generator.js";
 
 const { Client } = pg;
 const BATCH_SIZE = 200;
@@ -72,6 +73,34 @@ async function main() {
       await generateMemoryEmbeddings(client, memoryRows);
     } else {
       console.log("[BATCH] No memory embeddings to generate");
+    }
+      /* =====================================================
+       3️⃣ DOCUMENT → DOCUMENT SECTION EMBEDDING
+    ===================================================== */
+    const { rows: documentRows } = await client.query(
+      `
+      SELECT
+        s.id,
+        s.document_id,
+        s.section_type,
+        s.content
+      FROM document_sections s
+      LEFT JOIN document_section_vectors v
+        ON v.section_id = s.id
+      WHERE v.section_id IS NULL
+      ORDER BY s.created_at ASC
+      LIMIT $1
+      `,
+      [BATCH_SIZE]
+    );
+
+    if (documentRows.length > 0) {
+      console.log(
+        \`[BATCH] Generating \${documentRows.length} document embeddings\`
+      );
+      await generateDocumentEmbeddings(client, documentRows);
+    } else {
+      console.log("[BATCH] No document embeddings to generate");
     }
 
     console.log("[BATCH] Phase9 embedding finished");
